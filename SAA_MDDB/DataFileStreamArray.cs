@@ -24,7 +24,7 @@ namespace SAA_MDDB
         {
             get 
             {
-                var output = "";
+                //var output = "";
                 _fs.Seek(index * DATA_SIZE, SeekOrigin.Begin);
                 foreach (var c in _metaData) 
                 {
