@@ -17,15 +17,17 @@ namespace SAA_MDDB
         private BinaryReader _br;
         private readonly BinaryWriter _bw;
         private int DATA_SIZE;
+        private int _rowCount = 0;
 
         public string _tableName;
+        public readonly int Offset = 4;
         //todo think about the way that you can know how many rows each table has 
         public string this[int index]
         {
             get 
             {
                 var output = "";
-                _fs.Seek(index * DATA_SIZE, SeekOrigin.Begin);
+                _fs.Seek(Offset + index * DATA_SIZE, SeekOrigin.Begin);
                 foreach (var c in _metaData) 
                 {
                     output += CharsToString(_br.ReadChars(c.GetSize())) + " ";
@@ -34,6 +36,7 @@ namespace SAA_MDDB
             }
             set
             {
+                _rowCount++;
                 var val = StringHelper.MySplit(value, '\0');
 
                 if (_metaData.Count != val.Length)
@@ -42,8 +45,9 @@ namespace SAA_MDDB
                     return;
                 }
 
-                _fs.Seek(index * DATA_SIZE, SeekOrigin.Begin);
-               
+                _bw.Write(_rowCount);
+                _fs.Seek(Offset + index * DATA_SIZE, SeekOrigin.Begin);
+                
                 for (int i = 0; i < val.Length; i++)
                 {
                     _bw.Write(StringToChars(val[i], _metaData[i].GetSize())); 
@@ -64,6 +68,7 @@ namespace SAA_MDDB
                 DATA_SIZE += col.GetSize();
             }
             _tableName = tableName;
+            _rowCount = _br.ReadInt32();
         }
 
         public static string CharsToString(char[] chars)

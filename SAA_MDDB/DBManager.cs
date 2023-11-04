@@ -57,7 +57,11 @@ class DBManager
             }
         }
 
-        using (File.Create(name)) { } ;
+        using (var file = new FileStream(name,FileMode.Create)) 
+        {
+            var bw = new BinaryWriter(file);
+            bw.Write(0);
+        }
 
         _tableNames.Add(name);
         using(var tableFile = new FileStream(_tfName,FileMode.Create))
