@@ -5,6 +5,9 @@ var dbManager = new DBManager();
 var col1 = new Column("a", MDDBType.Int);
 var col2 = new Column("b", MDDBType.Date);
 var col3 = new Column("c",MDDBType.String);
+col2.DefaultValue = "29.05.2001";
+col1.IsAutoIncrement = true;
+col2.IsAutoIncrement = true;
 
 MyList<Column> colomns = new MyList<Column>();
 colomns.Add(col1);

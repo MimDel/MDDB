@@ -21,7 +21,7 @@ namespace SAA_MDDB
 
         public string _tableName;
         public readonly int Offset = 4;
-        //todo think about the way that you can know how many rows each table has 
+
         public string this[int index]
         {
             get 
@@ -98,6 +98,8 @@ namespace SAA_MDDB
             for (int i = 0; i < count; i++)
             {
                 var col = new Column(_mbr.ReadString(), (MDDBType)_mbr.ReadByte());
+                col.DefaultValue = _mbr.ReadString();
+                col.IsAutoIncrement = _mbr.ReadBoolean();
                 cols.Add(col);
             }
 

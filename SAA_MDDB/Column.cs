@@ -1,7 +1,25 @@
 ﻿namespace SAA_MDDB;
 
-readonly struct Column
+struct Column
 {
+    private string _default = "NULL";
+    private bool _autoIncrement = false;
+    public string DefaultValue {
+        get => _default;
+        set
+        {
+            if(_default != value)
+                _default = value;
+        }
+    }
+    public bool IsAutoIncrement {
+        get => _autoIncrement;
+        set 
+        {
+            if (Type == MDDBType.Int)
+                _autoIncrement = value;
+        }
+    }
     public string Name { get; }
     public MDDBType Type { get; }
 

@@ -54,6 +54,8 @@ class DBManager
             {
                 bw.Write(col.Name);
                 bw.Write((byte)col.Type);
+                bw.Write(col.DefaultValue);
+                bw.Write(col.IsAutoIncrement);
             }
         }
 
