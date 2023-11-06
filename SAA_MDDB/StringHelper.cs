@@ -27,5 +27,7 @@ namespace SAA_MDDB
             result.Add(word);
             return result.ToArray();
         }
+
+
     }
 }

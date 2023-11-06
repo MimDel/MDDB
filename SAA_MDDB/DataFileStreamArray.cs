@@ -17,7 +17,7 @@ namespace SAA_MDDB
         private BinaryReader _mbr;
         private BinaryReader _br;
         private readonly BinaryWriter _bw;
-        private int _rowCount = 0;
+        public int _rowCount = 0;
         public int DATA_SIZE { get; set; }
 
         public string _tableName;

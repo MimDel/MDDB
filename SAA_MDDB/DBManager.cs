@@ -108,7 +108,7 @@ class DBManager
         }
     }
 
-    public void TableInfo(string name, int dataSize)
+    public void TableInfo(string name)
     {
         if (!File.Exists(name))
         {
@@ -116,20 +116,33 @@ class DBManager
             return;
         }
 
-        int numberOfRows = 0;
         int fileSize = 0;
 
-        using (var file = new FileStream(name, FileMode.Open))
+        var row = new DataFileStreamArray(name);
+        fileSize = row._rowCount * row.DATA_SIZE;
+
+        Console.WriteLine($"There are {row._rowCount} entries in the table.");
+        Console.WriteLine($"The occupied space: {fileSize/1024} KB");
+
+        row.Dispose();
+    }
+
+    public void Insert(string name, MyList<string> data)
+    {
+        if (!File.Exists(name))
         {
-            file.Seek(0, SeekOrigin.Begin);
-            var br = new BinaryReader(file);
-            numberOfRows = br.ReadInt32();
+            Console.WriteLine("You can not insert row in table that do not exist.");
+            return;
         }
 
-        fileSize = numberOfRows * dataSize;
+        var row = new DataFileStreamArray(name);
 
-        Console.WriteLine($"There are {numberOfRows} entries in the table.");
-        Console.WriteLine($"The occupied space: {fileSize/1024} KB");
+        foreach (var item in data)
+        {
+            row[row._rowCount] = item;
+        }
+
+        row.Dispose();
     }
 }
 

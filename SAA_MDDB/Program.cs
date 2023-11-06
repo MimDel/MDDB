@@ -10,9 +10,15 @@ col1.IsAutoIncrement = true;
 col2.IsAutoIncrement = true;
 
 MyList<Column> colomns = new MyList<Column>();
+MyList<string> data = new MyList<string>();
 colomns.Add(col1);
 colomns.Add(col2);
 colomns.Add(col3);
+
+for (int i = 0; i < 3000; i++)
+{
+    data.Add($"{i}\0kekdlfne");
+}
 
 dbManager.CreateTable("Test", colomns);
 dbManager.CreateTable("Test1", colomns);
@@ -21,31 +27,7 @@ dbManager.CreateTable("Test3", colomns);
 dbManager.CreateTable("Test4", colomns);
 dbManager.CreateTable("Test5", colomns);
 
-
-
-var data = new DataFileStreamArray("Test2");
-for (int i = 0; i < 3000; i++)
-{
-    data[i] = "13\016.09.2022\0jrkdfmp";
-}
-
-var data2 = new DataFileStreamArray("Test3");
-data2[0] = "13\016.09.2022\0jrkdfmp";
-data2[1] = "13\016.03.2022\0jmp";
-
-for (int i = 0; i < 2; i++)
-{
-    Console.WriteLine(data2[i]); 
-}
-Console.WriteLine();
-for (int i = 0; i < 30; i++)
-{
-    Console.WriteLine(data[i]);
-}
+dbManager.Insert("Test2",data);
 
 dbManager.ListTables();
-
-var n = data.DATA_SIZE;
-data.Dispose();
-data2.Dispose();
-dbManager.TableInfo("Test2", n);
+dbManager.TableInfo("Test2");
