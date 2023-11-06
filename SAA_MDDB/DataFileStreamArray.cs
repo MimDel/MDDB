@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,8 +17,8 @@ namespace SAA_MDDB
         private BinaryReader _mbr;
         private BinaryReader _br;
         private readonly BinaryWriter _bw;
-        private int DATA_SIZE;
         private int _rowCount = 0;
+        public int DATA_SIZE { get; set; }
 
         public string _tableName;
         public readonly int Offset = 4;
@@ -45,7 +46,9 @@ namespace SAA_MDDB
                     return;
                 }
 
+                _fs.Seek(0, SeekOrigin.Begin);
                 _bw.Write(_rowCount);
+
                 _fs.Seek(Offset + index * DATA_SIZE, SeekOrigin.Begin);
                 
                 for (int i = 0; i < val.Length; i++)
@@ -104,6 +107,15 @@ namespace SAA_MDDB
             }
 
             return cols;
+        }
+
+        public void Dispose()
+        {
+            _br.Close();
+            _bw.Close();
+            _mbr.Close();
+            _fs.Dispose();
+            _mfs.Dispose();
         }
     }
 }

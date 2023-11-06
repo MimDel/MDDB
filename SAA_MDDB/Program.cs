@@ -24,8 +24,10 @@ dbManager.CreateTable("Test5", colomns);
 
 
 var data = new DataFileStreamArray("Test2");
-data[0] = "13\016.09.2022\0jrkdfjsklsmp";
-data[1] = "13\016.03.2022\0p";
+for (int i = 0; i < 3000; i++)
+{
+    data[i] = "13\016.09.2022\0jrkdfmp";
+}
 
 var data2 = new DataFileStreamArray("Test3");
 data2[0] = "13\016.09.2022\0jrkdfmp";
@@ -36,9 +38,14 @@ for (int i = 0; i < 2; i++)
     Console.WriteLine(data2[i]); 
 }
 Console.WriteLine();
-for (int i = 0; i < 2; i++)
+for (int i = 0; i < 30; i++)
 {
     Console.WriteLine(data[i]);
 }
 
 dbManager.ListTables();
+
+var n = data.DATA_SIZE;
+data.Dispose();
+data2.Dispose();
+dbManager.TableInfo("Test2", n);

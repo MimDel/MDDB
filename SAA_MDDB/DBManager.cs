@@ -107,5 +107,29 @@ class DBManager
             Console.WriteLine($"Table {i}: {_tableNames[i]}");
         }
     }
+
+    public void TableInfo(string name, int dataSize)
+    {
+        if (!File.Exists(name))
+        {
+            Console.WriteLine("You can not get the info for a table that do not exist.");
+            return;
+        }
+
+        int numberOfRows = 0;
+        int fileSize = 0;
+
+        using (var file = new FileStream(name, FileMode.Open))
+        {
+            file.Seek(0, SeekOrigin.Begin);
+            var br = new BinaryReader(file);
+            numberOfRows = br.ReadInt32();
+        }
+
+        fileSize = numberOfRows * dataSize;
+
+        Console.WriteLine($"There are {numberOfRows} entries in the table.");
+        Console.WriteLine($"The occupied space: {fileSize/1024} KB");
+    }
 }
 
