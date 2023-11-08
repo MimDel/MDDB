@@ -118,13 +118,28 @@ class DBManager
 
         int fileSize = 0;
 
-        var row = new DataFileStreamArray(name);
-        fileSize = row._rowCount * row.DATA_SIZE;
+        var table = new DataFileStreamArray(name);
 
-        Console.WriteLine($"There are {row._rowCount} entries in the table.");
+        Console.WriteLine(new string('-',4*21));
+        Console.Write(StringHelper.AddPadding(21,"|Field"));
+        Console.Write(StringHelper.AddPadding(20,"Type"));
+        Console.Write(StringHelper.AddPadding(20,"Default"));
+        Console.Write(StringHelper.AddPadding(20,"Auto Incrament"));
+        Console.WriteLine();
+        Console.WriteLine(new string('-', 4 * 21));
+
+        for (int i = 0; i < table._metaData.Count; i++)
+        {
+            Console.WriteLine($"{table._metaData[i].ToString()}");
+        }
+        Console.WriteLine(new string('-', 4 * 21));
+
+        fileSize = table._rowCount * table.DATA_SIZE;
+
+        Console.WriteLine($"There are {table._rowCount} entries in the table.");
         Console.WriteLine($"The occupied space: {fileSize/1024} KB");
 
-        row.Dispose();
+        table.Dispose();
     }
 
     public void Insert(string name, MyList<string> data)

@@ -13,12 +13,12 @@ namespace SAA_MDDB
     {
         private readonly Stream _fs;
         private readonly Stream _mfs;
-        private readonly MyList<Column> _metaData;
         private BinaryReader _mbr;
         private BinaryReader _br;
         private readonly BinaryWriter _bw;
         public int _rowCount = 0;
         public int DATA_SIZE { get; set; }
+        public readonly MyList<Column> _metaData;
 
         public string _tableName;
         public readonly int Offset = 4;

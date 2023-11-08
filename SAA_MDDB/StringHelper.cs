@@ -28,6 +28,10 @@ namespace SAA_MDDB
             return result.ToArray();
         }
 
+        public static string AddPadding(int padding, string s)
+        {
+            return s + new string(' ', padding - s.Length) + '|';
+        }
 
     }
 }

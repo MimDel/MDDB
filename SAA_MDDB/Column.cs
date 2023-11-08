@@ -8,13 +8,13 @@ struct Column
         get => _default;
         set
         {
-            if(_default != value)
+            if (_default != value)
                 _default = value;
         }
     }
     public bool IsAutoIncrement {
         get => _autoIncrement;
-        set 
+        set
         {
             if (Type == MDDBType.Int)
                 _autoIncrement = value;
@@ -39,4 +39,8 @@ struct Column
         }
         return 0;
     }
+
+    public override string? ToString() => $"|{StringHelper.AddPadding(20, Name)}" +
+        $"{StringHelper.AddPadding(20, Type.ToString())}{StringHelper.AddPadding(20, _default)}" +
+        $"{StringHelper.AddPadding(20, _autoIncrement ? "True" : "False")}";
 }
