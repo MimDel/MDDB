@@ -17,7 +17,7 @@ colomns.Add(col3);
 
 for (int i = 0; i < 3000; i++)
 {
-    data.Add($"{i}\0kekdlfne");
+    data.Add($"{i}\015.03.2003\0kekdlfne");
 }
 
 dbManager.CreateTable("Test", colomns);
