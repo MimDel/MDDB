@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,5 +35,24 @@ namespace SAA_MDDB
             return s + new string(' ', padding - s.Length) + '|';
         }
 
+        public static int IndexOf(string text, char c)
+        {
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] == c)
+                    return i;
+            }
+            return -1;
+        }
+
+        public static string Substring(string text, int start, int end)
+        {
+            string copy = "";
+            for (int i = start; i < end; i++)
+            {
+                copy += text[i];
+            }
+            return copy;
+        }
     }
 }

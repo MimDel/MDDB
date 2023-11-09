@@ -1,4 +1,5 @@
 ﻿using SAA_MDDB;
+using System.Reflection.Metadata;
 
 var dbManager = new DBManager();
 
@@ -29,5 +30,8 @@ dbManager.CreateTable("Test5", colomns);
 
 dbManager.Insert("Test2",data);
 
-dbManager.ListTables();
-dbManager.TableInfo("Test2");
+CommandHandler commandHandler = new CommandHandler();
+commandHandler.HandleCommand("TableInfo Test2");
+commandHandler.HandleCommand("DropTable Test");
+commandHandler.HandleCommand("ListTables");
+
