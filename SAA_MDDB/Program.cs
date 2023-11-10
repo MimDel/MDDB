@@ -1,37 +1,48 @@
 ﻿using SAA_MDDB;
 using System.Reflection.Metadata;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-var dbManager = new DBManager();
+//var dbManager = new DBManager();
 
-var col1 = new Column("a", MDDBType.Int);
-var col2 = new Column("b", MDDBType.Date);
-var col3 = new Column("c",MDDBType.String);
-col2.DefaultValue = "29.05.2001";
-col1.IsAutoIncrement = true;
-col2.IsAutoIncrement = true;
+//var col1 = new Column("a", MDDBType.Int);
+//var col2 = new Column("b", MDDBType.Date);
+//var col3 = new Column("c",MDDBType.String);
+//col2.DefaultValue = "29.05.2001";
+//col1.IsAutoIncrement = true;
+//col2.IsAutoIncrement = true;
 
-MyList<Column> colomns = new MyList<Column>();
-MyList<string> data = new MyList<string>();
-colomns.Add(col1);
-colomns.Add(col2);
-colomns.Add(col3);
+//MyList<Column> colomns = new MyList<Column>();
+//MyList<string> data = new MyList<string>();
+//colomns.Add(col1);
+//colomns.Add(col2);
+//colomns.Add(col3);
 
-for (int i = 0; i < 3000; i++)
-{
-    data.Add($"{i}\015.03.2003\0kekdlfne");
-}
+//for (int i = 0; i < 3000; i++)
+//{
+//    data.Add($"{i}\015.03.2003\0kekdlfne");
+//}
 
-dbManager.CreateTable("Test", colomns);
-dbManager.CreateTable("Test1", colomns);
-dbManager.CreateTable("Test2", colomns);
-dbManager.CreateTable("Test3", colomns);
-dbManager.CreateTable("Test4", colomns);
-dbManager.CreateTable("Test5", colomns);
+//dbManager.CreateTable("Test", colomns);
+//dbManager.CreateTable("Test1", colomns);
+//dbManager.CreateTable("Test2", colomns);
+//dbManager.CreateTable("Test3", colomns);
+//dbManager.CreateTable("Test4", colomns);
+//dbManager.CreateTable("Test5", colomns);
 
-dbManager.Insert("Test2",data);
+//dbManager.Insert("Test2",data);
 
 CommandHandler commandHandler = new CommandHandler();
-commandHandler.HandleCommand("TableInfo Test2");
-commandHandler.HandleCommand("DropTable Test");
-commandHandler.HandleCommand("ListTables");
+//commandHandler.HandleCommand("TableInfo Test2");
+//commandHandler.HandleCommand("DropTable Test");
+//commandHandler.HandleCommand("ListTables");
+
+
+var d = StringHelper.MySplit("Id:int,  Name:string,  BirthDate:data default \"01.01.2022\"", ",  ");
+for (int i = 0; i < d.Length; i++)
+{
+    Console.WriteLine(d[i]);
+}
+//commandHandler.HandleCommand("CreateTable   Sample(Id:int,   Name:string, BirthDate:data default \"01.01.2022\")");
+
+
 
