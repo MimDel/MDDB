@@ -61,7 +61,26 @@ namespace SAA_MDDB
             string tableInfo = StringHelper.Substring(param, startOfInfo+1, endOfInfo);
             Console.WriteLine(tableName);
             Console.WriteLine(tableInfo);
-            //var tableRow = StringHelper.MySplit(tableInfo, ", ");
+            var tableCols = StringHelper.MySplit(tableInfo, ",");
+            for (int i = 0; i < tableCols.Length; i++)
+            {
+                tableCols[i] = StringHelper.Trim(tableCols[i]);
+                var infoCols  = StringHelper.MySplit(tableCols[i], ':');
+                if (infoCols.Length != 2)
+                {
+                    Console.WriteLine("Invalid input.");
+                    break;
+                }
+                infoCols[0] = StringHelper.Trim(infoCols[0]);
+                infoCols[1] = StringHelper.Trim(infoCols[1]);
+                if (!StringHelper.IsNameValid(infoCols[0]))
+                {
+                    Console.WriteLine($"The name of the {i} column is not valid.");
+                    break;
+                }
+
+                Console.WriteLine(tableCols[i]);
+            }
 
         }
     }

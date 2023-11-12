@@ -36,13 +36,8 @@ CommandHandler commandHandler = new CommandHandler();
 //commandHandler.HandleCommand("DropTable Test");
 //commandHandler.HandleCommand("ListTables");
 
-
-var d = StringHelper.MySplit("Id:int,  Name:string,  BirthDate:data default \"01.01.2022\"", ",  ");
-for (int i = 0; i < d.Length; i++)
-{
-    Console.WriteLine(d[i]);
-}
-//commandHandler.HandleCommand("CreateTable   Sample(Id:int,   Name:string, BirthDate:data default \"01.01.2022\")");
+Console.WriteLine(StringHelper.ToLower("HJhdn-63Jk"));
+//commandHandler.HandleCommand("CreateTable Sample(Id:int,Name:string, BirthDate:data  default \"01.01.2022\")");
 
 
 

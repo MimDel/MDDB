@@ -48,10 +48,15 @@ namespace SAA_MDDB
             while (IndexOf(copyText,delimiter) != -1)
             {
                 index = IndexOf(copyText, delimiter);
-                result.Add(Substring(text, i, index + i));
+                if (index > 0)
+                {
+                    result.Add(Substring(text, i, index + i));
+                }
                 i = index + i + delimiter.Length;
                 copyText = Substring(text, i, text.Length);
+                
             }
+            if (copyText != "")
             result.Add(copyText);
             return result.ToArray();
 
@@ -123,5 +128,44 @@ namespace SAA_MDDB
             }
             return copy;
         }
+
+        public static string Trim(string text)
+        {
+            int startIndex;
+            int endIndex;
+            for (startIndex = 0; startIndex < text.Length - 1; startIndex++)
+            {
+                if (text[startIndex] != ' ')
+                    break;
+            }   
+            for (endIndex = text.Length - 1; 0 < endIndex; endIndex--)
+            {
+                if (text[endIndex] != ' ')
+                    break;
+            }
+            return Substring(text, startIndex, endIndex + 1);
+        }
+
+        public static string ToLower(string text)
+        {
+            var copyText = text.ToCharArray();
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] >= 'A' && text[i] <= 'Z')
+                    copyText[i] = (char)(text[i] + 32);
+            }
+            return new string(copyText);
+        }
+
+        public static bool IsNameValid(string text)
+        {
+            foreach (var c in text)
+            {
+                if(!(c >= 'A' && c<='Z' || c>='a' && c<='z' || c>='1' && c<='9' || c=='_' || c == '-'))
+                    return false;
+            }
+            return true;
+        }
+
     }
 }
