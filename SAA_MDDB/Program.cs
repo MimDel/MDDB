@@ -32,12 +32,11 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 //dbManager.Insert("Test2",data);
 
 CommandHandler commandHandler = new CommandHandler();
-//commandHandler.HandleCommand("TableInfo Test2");
 //commandHandler.HandleCommand("DropTable Test");
 //commandHandler.HandleCommand("ListTables");
 
-Console.WriteLine(StringHelper.ToLower("HJhdn-63Jk"));
-//commandHandler.HandleCommand("CreateTable Sample(Id:int,Name:string, BirthDate:data  default \"01.01.2022\")");
+commandHandler.HandleCommand("CreateTable Go6o(Id  :  int,   Name:string, BirthDate:date, Girls: int)");
+commandHandler.HandleCommand("TableInfo Go6o");
 
 
 

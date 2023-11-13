@@ -119,7 +119,7 @@ class DBManager
         int fileSize = 0;
 
         var table = new DataFileStreamArray(name);
-
+        Console.WriteLine(name);
         Console.WriteLine(new string('-',4*21));
         Console.Write(StringHelper.AddPadding(21,"|Field"));
         Console.Write(StringHelper.AddPadding(20,"Type"));

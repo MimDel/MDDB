@@ -45,7 +45,7 @@ namespace SAA_MDDB
                 return result.ToArray();
             }
 
-            while (IndexOf(copyText,delimiter) != -1)
+            while (IndexOf(copyText, delimiter) != -1)
             {
                 index = IndexOf(copyText, delimiter);
                 if (index > 0)
@@ -54,10 +54,10 @@ namespace SAA_MDDB
                 }
                 i = index + i + delimiter.Length;
                 copyText = Substring(text, i, text.Length);
-                
+
             }
             if (copyText != "")
-            result.Add(copyText);
+                result.Add(copyText);
             return result.ToArray();
 
         }
@@ -137,7 +137,7 @@ namespace SAA_MDDB
             {
                 if (text[startIndex] != ' ')
                     break;
-            }   
+            }
             for (endIndex = text.Length - 1; 0 < endIndex; endIndex--)
             {
                 if (text[endIndex] != ' ')
@@ -155,16 +155,6 @@ namespace SAA_MDDB
                     copyText[i] = (char)(text[i] + 32);
             }
             return new string(copyText);
-        }
-
-        public static bool IsNameValid(string text)
-        {
-            foreach (var c in text)
-            {
-                if(!(c >= 'A' && c<='Z' || c>='a' && c<='z' || c>='1' && c<='9' || c=='_' || c == '-'))
-                    return false;
-            }
-            return true;
         }
 
     }
