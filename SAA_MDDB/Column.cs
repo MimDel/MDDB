@@ -4,7 +4,9 @@ struct Column
 {
     private string _default = "NULL";
     private bool _autoIncrement = false;
-    public string DefaultValue {
+
+    public string DefaultValue
+    {
         get => _default;
         set
         {
@@ -12,7 +14,8 @@ struct Column
                 _default = value;
         }
     }
-    public bool IsAutoIncrement {
+    public bool IsAutoIncrement
+    {
         get => _autoIncrement;
         set
         {
@@ -20,6 +23,7 @@ struct Column
                 _autoIncrement = value;
         }
     }
+
     public string Name { get; }
     public MDDBType Type { get; }
 

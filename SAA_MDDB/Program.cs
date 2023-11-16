@@ -35,7 +35,7 @@ CommandHandler commandHandler = new CommandHandler();
 //commandHandler.HandleCommand("DropTable Test");
 //commandHandler.HandleCommand("ListTables");
 
-commandHandler.HandleCommand("CreateTable Go6o(Id  :  int,   Name:string, BirthDate:date, Girls: int)");
+commandHandler.HandleCommand("CreateTable Go6o(Id      :     int,   Name:string , BirthDate:date default 01.02.2022)");
 commandHandler.HandleCommand("TableInfo Go6o");
 
 

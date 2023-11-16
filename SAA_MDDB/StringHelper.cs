@@ -156,6 +156,5 @@ namespace SAA_MDDB
             }
             return new string(copyText);
         }
-
     }
 }

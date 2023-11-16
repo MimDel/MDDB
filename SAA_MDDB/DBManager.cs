@@ -9,13 +9,15 @@ namespace SAA_MDDB;
 
 class DBManager
 {
-    private const string _tfName = "Tables"; 
+    private const string Tables = "Tables"; 
+
     private MyList<string> _tableNames = new MyList<string>();
+
     public DBManager()
     {
-        if (!File.Exists(_tfName))
+        if (!File.Exists(Tables))
         {
-            var file = new FileStream(_tfName, FileMode.Create);
+            var file = new FileStream(Tables, FileMode.Create);
             var bw = new BinaryWriter(file);
             bw.Write(0);
             bw.Close();
@@ -23,7 +25,7 @@ class DBManager
         }
         else
         {
-            using (var tf = new FileStream(_tfName, FileMode.Open))
+            using (var tf = new FileStream(Tables, FileMode.Open))
             {
                 var br = new BinaryReader(tf);
                 int count = br.ReadInt32();
@@ -66,7 +68,7 @@ class DBManager
         }
 
         _tableNames.Add(name);
-        using(var tableFile = new FileStream(_tfName,FileMode.Create))
+        using(var tableFile = new FileStream(Tables,FileMode.Create))
         {
             var bw = new BinaryWriter(tableFile);
             bw.Write(_tableNames.Count);
@@ -89,7 +91,7 @@ class DBManager
         File.Delete(name);
 
         _tableNames.Remove(name);
-        using (var tableFile = new FileStream(_tfName, FileMode.Create))
+        using (var tableFile = new FileStream(Tables, FileMode.Create))
         {
             var bw = new BinaryWriter(tableFile);
             bw.Write(_tableNames.Count);

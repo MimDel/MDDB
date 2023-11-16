@@ -26,15 +26,20 @@ namespace SAA_MDDB
             return true;
         }
 
-        public static MDDBType? StringToMDDBType(string type)
+        public static MDDBType? StringToMDDBType(string type) => type switch
         {
-            switch (type)
-            {
-                case "int": return MDDBType.Int;
-                case "date": return MDDBType.Date;
-                case "string": return MDDBType.String;
-            }
-            return null;
-        }
+            "int" => MDDBType.Int,
+            "date" => MDDBType.Date,
+            "string" => MDDBType.String,
+            _ => null,
+        };
+
+        public static bool IsDefaultValid(MDDBType type, string value) => type switch
+        {
+            MDDBType.Int => int.TryParse(value, out _),
+            MDDBType.String => true,
+            MDDBType.Date => DateTime.TryParse(value, out _),
+            _ => false,
+        };
     }
 }
