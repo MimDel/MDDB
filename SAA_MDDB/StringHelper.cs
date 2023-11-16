@@ -15,20 +15,20 @@ namespace SAA_MDDB
         public static string[] MySplit(string text, char c)
         {
             MyList<string> result = new MyList<string>();
-            string word = "";
+            MyStringBuilder sb = new MyStringBuilder();
 
             for (int i = 0; i < text.Length; i++)
             {
                 if (text[i] != c)
-                    word += text[i];
+                    sb.Append(text[i]);
                 else
                 {
-                    result.Add(word);
-                    word = "";
+                    result.Add(sb.ToString());
+                    sb.Clear();
                 }
             }
 
-            result.Add(word);
+            result.Add(sb.ToString());
             return result.ToArray();
         }
 
@@ -89,44 +89,45 @@ namespace SAA_MDDB
 
         public static string Substring(string text, int start, int end)
         {
-            string copy = "";
+            MyStringBuilder sb = new MyStringBuilder();
             for (int i = start; i < end; i++)
             {
-                copy += text[i];
+                sb.Append(text[i]);
             }
-            return copy;
+            return sb.ToString();
         }
 
         public static string RemoveSpaces(string text)
         {
-            string copy = "";
+            MyStringBuilder sb = new MyStringBuilder();
             foreach (var c in text)
             {
                 if (c != ' ')
-                    copy += c;
+                    sb.Append(c);
             }
-            return copy;
+            return sb.ToString();
         }
 
         public static string RemoveExtraSpaces(string text)
         {
-            string copy = "";
+            MyStringBuilder sb = new MyStringBuilder();
             bool firstSpace = false;
             foreach (var c in text)
             {
                 if (c == ' ')
                 {
                     if (!firstSpace)
-                        copy += " ";
+                        sb.Append(' ');
+
                     firstSpace = true;
                 }
                 else
                 {
-                    copy += c;
+                    sb.Append(c);
                     firstSpace = false;
                 }
             }
-            return copy;
+            return sb.ToString();
         }
 
         public static string Trim(string text)
