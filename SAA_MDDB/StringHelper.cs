@@ -32,6 +32,35 @@ namespace SAA_MDDB
             return result.ToArray();
         }
 
+        public static string[] SplitAttributes(string text)
+        {
+            MyList<string> result = new MyList<string>();
+            MyStringBuilder sb = new MyStringBuilder();
+            bool quotation = false;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] == '"')
+                {
+                    quotation = !quotation;
+                    continue;
+                }
+
+                if (text[i] == ' ' && !quotation)
+                {
+                    result.Add(sb.ToString());
+                    sb.Clear();
+                    continue;
+                }
+
+                sb.Append(text[i]);
+                
+            }
+
+            result.Add(sb.ToString());
+            return result.ToArray();
+        }
+
         public static string[] MySplit(string text, string delimiter)
         {
             MyList<string> result = new MyList<string>();
@@ -64,6 +93,12 @@ namespace SAA_MDDB
 
         public static string AddPadding(int padding, string s)
         {
+            if (s.Length > padding)
+            {
+                s = Substring(s, 0, padding - 3);
+                s += "...";
+            }
+
             return s + new string(' ', padding - s.Length) + '|';
         }
 

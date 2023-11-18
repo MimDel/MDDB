@@ -88,7 +88,7 @@ namespace SAA_MDDB
                     return;
                 }
 
-                var colAttributeInfo = StringHelper.MySplit(infoCols[1], ' ');
+                var colAttributeInfo = StringHelper.SplitAttributes(infoCols[1]);
                 var colTypeInfo = Validator.StringToMDDBType(colAttributeInfo[0]);
                 bool autoIncrement = false;
                 string defaultVal = "NULL";
