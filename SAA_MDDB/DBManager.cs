@@ -81,12 +81,6 @@ class DBManager
 
     public void DropTable(string name)
     {
-        if (!File.Exists(name)) 
-        {
-            Console.WriteLine("You can not drop a table that do not exist.");
-            return;
-        }
-
         File.Delete($"Meta_{name}");
         File.Delete(name);
 
@@ -112,12 +106,6 @@ class DBManager
 
     public void TableInfo(string name)
     {
-        if (!File.Exists(name))
-        {
-            Console.WriteLine("You can not get the info for a table that do not exist.");
-            return;
-        }
-
         int fileSize = 0;
 
         var table = new DataFileStreamArray(name);
@@ -146,12 +134,6 @@ class DBManager
 
     public void Insert(string name, MyList<string> data)
     {
-        if (!File.Exists(name))
-        {
-            Console.WriteLine("You can not insert row in table that do not exist.");
-            return;
-        }
-
         var row = new DataFileStreamArray(name);
 
         foreach (var item in data)

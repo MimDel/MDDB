@@ -35,7 +35,12 @@ CommandHandler commandHandler = new CommandHandler();
 //commandHandler.HandleCommand("DropTable Test");
 //commandHandler.HandleCommand("ListTables");
 
-commandHandler.HandleCommand("CreateTable Person(Id: int default 2 , Name   :string default \"Nevena\", BirthDate:date default \"01.02.2022\")");
-commandHandler.HandleCommand("TableInfo Person");
+//commandHandler.HandleCommand("CreateTable Person(Id    :  int, Name   : string default \"Ivan Ivanov\", BirthDate: date default \"01.02.2022\")");
+//commandHandler.HandleCommand("TableInfo Person");
 
+//Console.WriteLine();
+
+//commandHandler.HandleCommand("ListTables");
+
+commandHandler.HandleCommand("Insert    INTO    Person   ( Id  , Name   ) VALUE (69,   \"Go6o\"), (45, \"To6o\")");
 

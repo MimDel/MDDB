@@ -32,21 +32,21 @@ namespace SAA_MDDB
             return result.ToArray();
         }
 
-        public static string[] SplitAttributes(string text)
+        public static string[] SplitAttributes(string text, char ignore, char delimiter)
         {
             MyList<string> result = new MyList<string>();
             MyStringBuilder sb = new MyStringBuilder();
-            bool quotation = false;
+            bool isInIgnore = false;
 
             for (int i = 0; i < text.Length; i++)
             {
-                if (text[i] == '"')
+                if (text[i] == ignore)
                 {
-                    quotation = !quotation;
+                    isInIgnore = !isInIgnore;
                     continue;
                 }
 
-                if (text[i] == ' ' && !quotation)
+                if (text[i] == delimiter && !isInIgnore)
                 {
                     result.Add(sb.ToString());
                     sb.Clear();

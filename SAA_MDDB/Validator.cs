@@ -36,7 +36,7 @@ namespace SAA_MDDB
 
         public static bool IsDefaultValid(MDDBType type, string value) => type switch
         {
-            MDDBType.Int => int.TryParse(value, out _),
+            MDDBType.Int => int.TryParse(value,out _),
             MDDBType.String => true,
             MDDBType.Date => DateTime.TryParse(value, out _),
             _ => false,

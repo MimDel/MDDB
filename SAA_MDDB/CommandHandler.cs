@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SAA_MDDB
 {
@@ -14,6 +15,7 @@ namespace SAA_MDDB
         private const string TableInfo = "tableinfo";
         private const string DropTable = "droptable";
         private const string CreateTable = "createtable";
+        private const string Insert = "insert";
         private const string Int = "int";
         private const string String = "string";
         private const string Date = "date";
@@ -39,11 +41,20 @@ namespace SAA_MDDB
 
             switch (command)
             {
-                case TableInfo:  HandleTableInfo(param);
+                case TableInfo:
+                    HandleTableInfo(param);
                     break;
-                case DropTable: HandleDropTable(param);
+                case DropTable:
+                    HandleDropTable(param);
                     break;
-                case CreateTable: HandleCreateTable(param);
+                case CreateTable:
+                    HandleCreateTable(param);
+                    break;
+                case Insert:
+                    HandleInsert(param);
+                    break;
+                default:
+                    Console.WriteLine("There is no command that matches your input.");
                     break;
             }
         }
@@ -55,11 +66,23 @@ namespace SAA_MDDB
 
         private void HandleTableInfo(string name)
         {
+            if (!File.Exists(name))
+            {
+                Console.WriteLine("You can not get the info for a table that do not exist.");
+                return;
+            }
+
             _dbManager.TableInfo(name);
         }
 
         private void HandleDropTable(string name)
         {
+            if (!File.Exists(name))
+            {
+                Console.WriteLine("You can not drop a table that do not exist.");
+                return;
+            }
+
             _dbManager.DropTable(name);
         }
 
@@ -69,6 +92,11 @@ namespace SAA_MDDB
             int startOfInfo = StringHelper.IndexOf(param, '(');
             int endOfInfo = StringHelper.IndexOf(param, ')');
             string tableName = StringHelper.Substring(param, 0 , startOfInfo);
+            if (tableName == "")
+            {
+                Console.WriteLine("You haven't specified the name of the table that you want to create.");
+                return;
+            }
             string tableInfo = StringHelper.Substring(param, startOfInfo+1, endOfInfo);
             var tableCols = StringHelper.MySplit(tableInfo, ",");
             for (int i = 0; i < tableCols.Length; i++)
@@ -88,7 +116,7 @@ namespace SAA_MDDB
                     return;
                 }
 
-                var colAttributeInfo = StringHelper.SplitAttributes(infoCols[1]);
+                var colAttributeInfo = StringHelper.SplitAttributes(infoCols[1], '"', ' ');
                 var colTypeInfo = Validator.StringToMDDBType(colAttributeInfo[0]);
                 bool autoIncrement = false;
                 string defaultVal = "NULL";
@@ -146,6 +174,96 @@ namespace SAA_MDDB
                 }
             }
             _dbManager.CreateTable(tableName,listCols);
+        }
+
+        private void HandleInsert(string param)
+        {
+            var startOfColData = StringHelper.IndexOf(param, '(');
+            var endOfColData = StringHelper.IndexOf(param, ')');
+
+            var tableInfo = StringHelper.MySplit(
+                StringHelper.Trim(StringHelper.Substring(param, 0, startOfColData)),' ');
+
+            if (StringHelper.Trim(tableInfo[0]) != "into")
+            {
+                Console.WriteLine("Missing the key word into.");
+                return;
+            }
+            if (tableInfo.Length == 1)
+            {
+                Console.WriteLine("No table name specified.");
+                return;
+            }
+
+            var tableName = StringHelper.Trim(tableInfo[1]);
+
+            if (!File.Exists(tableName))
+            {
+                Console.WriteLine("You can not insert row in table that do not exist.");
+                return;
+            }
+
+            var colNames = StringHelper.MySplit(
+                StringHelper.Substring(param, startOfColData + 1, endOfColData),',');
+
+            for (int i = 0; i < colNames.Length; i++)
+                colNames[i] = StringHelper.Trim(colNames[i]);
+
+
+            param = StringHelper.Trim(
+                StringHelper.Substring(param, endOfColData + 1, param.Length));
+
+            var startOfData = StringHelper.IndexOf(param, '(');
+            
+            if (StringHelper.Trim(StringHelper.Substring(param, 0 , startOfData)) != "value")
+            {
+                Console.WriteLine("You are missing the key word VALUE.");
+                return;
+            }
+
+            param = StringHelper.Substring(param, startOfData, param.Length);
+
+            ToBeInserted(colNames, param);
+
+        }
+
+        //todo work no ToBeInserted
+        private MyList<string> ToBeInserted(string[] colNames, string param)
+        {
+            var rows = new MyList<string>();
+            StringBuilder sb = new StringBuilder();
+
+            bool isInBracket = false;
+            bool isInQuotation = false;
+
+            foreach (var c in param)
+            {
+                if (c == '(')
+                {
+                   isInBracket = true;
+                   continue; 
+                }
+
+                if (c == '"')
+                {
+                   isInQuotation = !isInQuotation;
+                   continue;
+                }
+
+                if (c == ')' && !isInQuotation)
+                {
+                    rows.Add(sb.ToString());
+                    sb.Clear();
+                    isInBracket = false;
+                    continue;
+                }
+                
+                if(isInBracket)
+                sb.Append(c);
+            }
+
+            return rows;
+
         }
     }
 }
