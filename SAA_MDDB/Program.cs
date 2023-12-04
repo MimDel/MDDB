@@ -42,5 +42,5 @@ CommandHandler commandHandler = new CommandHandler();
 
 //commandHandler.HandleCommand("ListTables");
 
-commandHandler.HandleCommand("Insert    INTO    Person   ( Id  , Name   ) VALUE (69,   \"Go6o\"), (45, \"To6o\")");
+commandHandler.HandleCommand("Insert    INTO    Person   (Id, Name, BirthDate) VALUE (69, \"Helena H\", \"02.04.2020\") , (42, \"Lisa l\", \"01.09.1999\")");
 

@@ -18,13 +18,13 @@ namespace SAA_MDDB
             return true;
         }
 
-        public static bool IsTypeValid(string text)
-        {
-            if (!(text == "date" || text == "int" || text == "string"))
-                return false;
+        //public static bool IsTypeValid(string text)
+        //{
+        //    if (!(text == "date" || text == "int" || text == "string"))
+        //        return false;
 
-            return true;
-        }
+        //    return true;
+        //}
 
         public static MDDBType? StringToMDDBType(string type) => type switch
         {
@@ -34,7 +34,7 @@ namespace SAA_MDDB
             _ => null,
         };
 
-        public static bool IsDefaultValid(MDDBType type, string value) => type switch
+        public static bool IsTypeValid(MDDBType type, string value) => type switch
         {
             MDDBType.Int => int.TryParse(value,out _),
             MDDBType.String => true,

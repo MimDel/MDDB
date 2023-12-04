@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -152,7 +153,7 @@ namespace SAA_MDDB
 
                     if (colAttributeInfo.Length == 3 && colAttributeInfo[1] == "default")
                     {
-                        if (!Validator.IsDefaultValid(colTypeInfo.Value, colAttributeInfo[2]))
+                        if (!Validator.IsTypeValid(colTypeInfo.Value, colAttributeInfo[2]))
                         {
                             Console.WriteLine($"Default value does not match the type of the column or is not volid.");
                             return;
@@ -215,7 +216,7 @@ namespace SAA_MDDB
 
             var startOfData = StringHelper.IndexOf(param, '(');
             
-            if (StringHelper.Trim(StringHelper.Substring(param, 0 , startOfData)) != "value")
+            if (StringHelper.Trim(StringHelper.Substring(param, 0, startOfData)) != "value")
             {
                 Console.WriteLine("You are missing the key word VALUE.");
                 return;
@@ -223,32 +224,33 @@ namespace SAA_MDDB
 
             param = StringHelper.Substring(param, startOfData, param.Length);
 
-            ToBeInserted(colNames, param);
-
+            var result = ToBeInserted(colNames, param, tableName);
+            if (result != null) 
+            _dbManager.Insert(tableName, result);
         }
 
         //todo work no ToBeInserted
-        private MyList<string> ToBeInserted(string[] colNames, string param)
+        private MyList<string> ToBeInserted(string[] colNames, string param, string tableName)
         {
             var rows = new MyList<string>();
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
+            var df = new DataFileStreamArray(tableName);
+            var output = new MyStringBuilder();
+            var message = "";
 
             bool isInBracket = false;
             bool isInQuotation = false;
 
             foreach (var c in param)
             {
-                if (c == '(')
+                if (c == '(' && !isInQuotation)
                 {
                    isInBracket = true;
                    continue; 
                 }
 
                 if (c == '"')
-                {
                    isInQuotation = !isInQuotation;
-                   continue;
-                }
 
                 if (c == ')' && !isInQuotation)
                 {
@@ -262,8 +264,73 @@ namespace SAA_MDDB
                 sb.Append(c);
             }
 
+            for (int i = 0; i < rows.Count; i++)
+            {
+                output.Clear();
+                var data = StringHelper.SplitAttributes(rows[i], '"', ','); //todo remove the space
+                if (data.Length > colNames.Length)
+                {
+                    Console.WriteLine("Invalid number of values.");
+                    return null;
+                }
+                if (!FormatedRow(data, df._metaData, colNames, ref output, ref message))
+                {
+                    Console.WriteLine(message);
+                    return null;
+                }
+                rows[i] = output.ToString();
+            }
+            df.Dispose();
             return rows;
+        }
 
+        private bool FormatedRow(string[] data, MyList<Column> metaCol, string[] col, 
+            ref MyStringBuilder output, ref string message )
+        {
+            bool isColSkipped = true;
+            var dataIndex = 0;
+            for (int i = 0; i < metaCol.Count; i++)
+            {
+                for (int j = 0; j < col.Length; j++)
+                {
+                    if (metaCol[i].Name == col[j])
+                    { 
+                        isColSkipped = false;
+                        break;
+                    }
+                }
+
+                if (isColSkipped)
+                {
+                    if (i == metaCol.Count - 1)
+                    {
+                        output.Append(metaCol[i].DefaultValue);
+                    }
+                    else
+                    {
+                        output.Append(metaCol[i].DefaultValue + '\0');
+                    }
+                }
+                else
+                {
+                    if (!Validator.IsTypeValid(metaCol[i].Type, data[dataIndex]))
+                    {
+                        message = "Invalid data.";
+                        return false;
+                    }
+                    if (i == metaCol.Count - 1)
+                    {
+                        output.Append(data[dataIndex++]);
+                    }
+                    else
+                    { 
+                        output.Append(data[dataIndex++] + '\0');
+                    }
+                }
+
+                isColSkipped = true;
+            }
+            return true;
         }
     }
 }
