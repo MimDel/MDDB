@@ -54,7 +54,7 @@ namespace SAA_MDDB
                 }
 
                 sb.Append(text[i]);
-                
+
             }
 
             result.Add(sb.ToString());
@@ -191,6 +191,23 @@ namespace SAA_MDDB
                     copyText[i] = (char)(text[i] + 32);
             }
             return new string(copyText);
+        }
+
+        public static int CompareStrings(string str1, string str2)
+        {
+            int minLength = Math.Min(str1.Length, str2.Length);
+
+            for (int i = 0; i < minLength; i++)
+            {
+                int charComparison = str1[i].CompareTo(str2[i]);
+
+                if (charComparison != 0)
+                {
+                    return charComparison;
+                }
+            }
+
+            return str1.Length.CompareTo(str2.Length);
         }
     }
 }

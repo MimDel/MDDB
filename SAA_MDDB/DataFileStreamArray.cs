@@ -17,7 +17,7 @@ namespace SAA_MDDB
         private BinaryReader _br;
         private readonly BinaryWriter _bw;
         public int _rowCount = 0;
-        public int DATA_SIZE { get; set; }
+        public int DataSize { get; set; }
         public readonly MyList<Column> _metaData;
 
         public string _tableName;
@@ -28,7 +28,7 @@ namespace SAA_MDDB
             get 
             {
                 var output = "";
-                _fs.Seek(Offset + index * DATA_SIZE, SeekOrigin.Begin);
+                _fs.Seek(Offset + index * DataSize, SeekOrigin.Begin);
                 foreach (var c in _metaData) 
                 {
                     output += CharsToString(_br.ReadChars(c.GetSize())) + " ";
@@ -49,7 +49,7 @@ namespace SAA_MDDB
                 _fs.Seek(0, SeekOrigin.Begin);
                 _bw.Write(_rowCount);
 
-                _fs.Seek(Offset + index * DATA_SIZE, SeekOrigin.Begin);
+                _fs.Seek(Offset + index * DataSize, SeekOrigin.Begin);
                 
                 for (int i = 0; i < val.Length; i++)
                 {
@@ -68,7 +68,7 @@ namespace SAA_MDDB
             _metaData = LoadData(tableName);
             foreach (var col in _metaData)
             {
-                DATA_SIZE += col.GetSize();
+                DataSize += col.GetSize();
             }
             _tableName = tableName;
             _rowCount = _br.ReadInt32();

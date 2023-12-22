@@ -284,8 +284,7 @@ namespace SAA_MDDB
             return rows;
         }
 
-        private bool FormatedRow(string[] data, MyList<Column> metaCol, string[] col, 
-            ref MyStringBuilder output, ref string message )
+        private bool FormatedRow(string[] data, MyList<Column> metaCol, string[] col, ref MyStringBuilder output, ref string message )
         {
             bool isColSkipped = true;
             var dataIndex = 0;

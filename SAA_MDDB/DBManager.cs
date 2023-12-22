@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -124,7 +126,7 @@ class DBManager
         }
         Console.WriteLine(new string('-', 4 * 21));
 
-        fileSize = table._rowCount * table.DATA_SIZE;
+        fileSize = table._rowCount * table.DataSize;
 
         Console.WriteLine($"There are {table._rowCount} entries in the table.");
         Console.WriteLine($"The occupied space: {fileSize/1024} KB");
@@ -142,6 +144,55 @@ class DBManager
         }
 
         row.Dispose();
+    }
+
+    private ExpressionResult Compare(MyList<Cell> row, string expression)
+    {
+        var exp = StringHelper.MySplit(expression, ' ');
+        Cell? cell = null;
+        var left = exp[0];
+        var opr = exp[1];
+        var right = exp[2];
+
+        for (int i = 0; i < row.Count; i++) 
+        {
+            if (left == row[i].ColName)
+            {
+                cell = row[i];
+                break;
+            }
+        }
+
+        if (cell == null)
+            return new ExpressionResult(false, false, "Not valid colnm name.");
+
+        int result = -2;
+        switch(cell.Type)
+        {
+            case MDDBType.Int:
+                 result = int.Parse(cell.Value).CompareTo(int.Parse(right));
+                break;
+            case MDDBType.String:
+                result = StringHelper.CompareStrings(cell.Value, right); 
+                break;
+            case MDDBType.Date:
+                result = DateTime.Compare(DateTime.Parse(cell.Value), DateTime.Parse(right));
+                break;
+        }
+
+        if (result == -2)
+            return new ExpressionResult(false, false, "Invalid type.");
+
+        switch (opr)
+        {
+            case "<>": return new ExpressionResult(result != 0); 
+            case "=": return new ExpressionResult(result == 0);
+            case ">": return new ExpressionResult(result == 1);
+            case "<": return new ExpressionResult(result == -1);
+            case "<=": return new ExpressionResult(result == -1 || result == 0);
+            case ">=": return new ExpressionResult(result == 1 || result == 0);
+            default: return new ExpressionResult(false, false, "Invalid operator.");
+        }
     }
 }
 

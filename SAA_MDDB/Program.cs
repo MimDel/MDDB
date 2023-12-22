@@ -32,7 +32,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 //dbManager.Insert("Test2",data);
 
 CommandHandler commandHandler = new CommandHandler();
-//commandHandler.HandleCommand("DropTable Test");
+//commandHandler.HandleCommand("DropTable Person");
 //commandHandler.HandleCommand("ListTables");
 
 //commandHandler.HandleCommand("CreateTable Person(Id    :  int, Name   : string default \"Ivan Ivanov\", BirthDate: date default \"01.02.2022\")");
@@ -42,5 +42,5 @@ CommandHandler commandHandler = new CommandHandler();
 
 //commandHandler.HandleCommand("ListTables");
 
-commandHandler.HandleCommand("Insert    INTO    Person   (Id, Name, BirthDate) VALUE (69, \"Helena H\", \"02.04.2020\") , (42, \"Lisa l\", \"01.09.1999\")");
+//commandHandler.HandleCommand("Insert    INTO    Person   (Id, Name, BirthDate) VALUE (69, \"Helena H\", \"02.04.2020\") , (42, \"Lisa l\", \"01.09.1999\")");
 
