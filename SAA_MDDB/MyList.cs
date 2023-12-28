@@ -88,6 +88,14 @@ class MyList<T> : IEnumerable<T>
         Count--;
     }
 
+    public void Reverse()
+    {
+        for (int i = 0; i < Count / 2; i++)
+        {
+            (_array[i] , _array[Count - i - 1]) = (_array[Count - i - 1], _array[i]);
+        }
+    }
+
     public T[] ToArray()
     {
         var result  = new T[Count];

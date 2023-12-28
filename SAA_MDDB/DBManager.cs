@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.Globalization;
 using System.Linq;
@@ -146,13 +147,95 @@ class DBManager
         row.Dispose();
     }
 
+    //private ExpressionResult Where(MyList<Cell> row, string expression)
+    //{
+       
+    //}
+
+    public string ExpresionToTrueOrFalse(MyList<Cell> row, string expression)
+    {
+        if (expression[0] != '(')
+        {
+            expression = "( "+ expression + " )";
+        }
+        var exp = StringHelper.SplitAttributesIncludeIgnore(expression, '"', ' ');
+        string c = "";
+        string output = "";
+        
+        for (int i =0; i < exp.Length; i++)
+        {
+            if (exp[i] == "AND" || exp[i] == "OR" || exp[i] == ")")
+            {
+                if (c == "")
+                {
+                    output += ")";
+                    break;
+                }
+
+                var comp = Compare(row, StringHelper.Trim(c));
+                if (!comp.Success)
+                { 
+                    Console.WriteLine(comp.ErrorMessage);
+                    return "";
+                }
+
+                char opr = ')';
+                if (exp[i] == "AND")
+                    opr = '&';
+                else if (exp[i] == "OR")
+                    opr = '|';
+
+                if (comp.Result)
+                    output += "T" + " " + opr + " ";
+                else
+                    output += "F" + " " + opr + " ";
+
+                c = "";
+            }
+            else if (exp[i] == "(")
+            {
+                output += "(" + " ";
+            }
+            else if (exp[i] == ")")
+            { 
+                output += ")" + " ";
+            } 
+            else
+            {
+                c += exp[i] + " ";
+            }
+        }
+
+        return output;
+    }
+
     private ExpressionResult Compare(MyList<Cell> row, string expression)
     {
-        var exp = StringHelper.MySplit(expression, ' ');
+        var exp = StringHelper.SplitAttributesIncludeIgnore(expression,'"' ,' ');
         Cell? cell = null;
-        var left = exp[0];
-        var opr = exp[1];
-        var right = exp[2];
+        string left;
+        string opr;
+        string right;
+        bool notInExp = false;
+        bool endResult = false;
+        if (exp[0] == "NOT")
+        {
+            notInExp = true;
+            left = exp[1];
+            opr = exp[2];
+            right = exp[3];
+        }
+        else
+        {
+            left = exp[0];
+            opr = exp[1];
+            right = exp[2];
+        }
+
+        if (right[0] == '"')
+        {
+            right = StringHelper.Substring(right, 1, right.Length - 1);
+        }
 
         for (int i = 0; i < row.Count; i++) 
         {
@@ -185,14 +268,19 @@ class DBManager
 
         switch (opr)
         {
-            case "<>": return new ExpressionResult(result != 0); 
-            case "=": return new ExpressionResult(result == 0);
-            case ">": return new ExpressionResult(result == 1);
-            case "<": return new ExpressionResult(result == -1);
-            case "<=": return new ExpressionResult(result == -1 || result == 0);
-            case ">=": return new ExpressionResult(result == 1 || result == 0);
+            case "<>": endResult = (result != 0); break; 
+            case "=": endResult = (result == 0);break;
+            case ">": endResult = (result == 1); break;
+            case "<": endResult = (result == -1); break;
+            case "<=": endResult = (result == -1 || result == 0); break;
+            case ">=": endResult = (result == 1 || result == 0);break;
             default: return new ExpressionResult(false, false, "Invalid operator.");
         }
+
+        if (notInExp)
+            return new ExpressionResult(!endResult);
+
+        return new ExpressionResult(endResult);
     }
 }
 

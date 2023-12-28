@@ -61,6 +61,36 @@ namespace SAA_MDDB
             return result.ToArray();
         }
 
+        public static string[] SplitAttributesIncludeIgnore(string text, char ignore, char delimiter)
+        {
+            MyList<string> result = new MyList<string>();
+            MyStringBuilder sb = new MyStringBuilder();
+            bool isInIgnore = false;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] == ignore)
+                {
+                    isInIgnore = !isInIgnore;
+                    sb.Append(text[i]);
+                    continue;
+                }
+
+                if (text[i] == delimiter && !isInIgnore)
+                {
+                    result.Add(sb.ToString());
+                    sb.Clear();
+                    continue;
+                }
+
+                sb.Append(text[i]);
+
+            }
+
+            result.Add(sb.ToString());
+            return result.ToArray();
+        }
+
         public static string[] MySplit(string text, string delimiter)
         {
             MyList<string> result = new MyList<string>();
@@ -177,6 +207,22 @@ namespace SAA_MDDB
             for (endIndex = text.Length - 1; 0 < endIndex; endIndex--)
             {
                 if (text[endIndex] != ' ')
+                    break;
+            }
+            return Substring(text, startIndex, endIndex + 1);
+        }
+        public static string Trim(string text, char c)
+        {
+            int startIndex;
+            int endIndex;
+            for (startIndex = 0; startIndex < text.Length - 1; startIndex++)
+            {
+                if (text[startIndex] != c)
+                    break;
+            }
+            for (endIndex = text.Length - 1; 0 < endIndex; endIndex--)
+            {
+                if (text[endIndex] != c)
                     break;
             }
             return Substring(text, startIndex, endIndex + 1);

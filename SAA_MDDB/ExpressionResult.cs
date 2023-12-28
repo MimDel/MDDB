@@ -8,22 +8,22 @@ namespace SAA_MDDB
 {
     struct ExpressionResult
     {
-        public string ErrorMasssage;
+        public string ErrorMessage;
         public bool Result;
         public bool Success;
 
-        public ExpressionResult(bool result, bool success, string ErrorMassage)
+        public ExpressionResult(bool result, bool success, string ErrorMessage)
         {
             Result = result;
             Success = success;
-            ErrorMasssage = ErrorMassage;
+            this.ErrorMessage = ErrorMessage;
         }
 
         public ExpressionResult(bool result)
         {
             Result = result;
             Success = true;
-            ErrorMasssage = "";
+            ErrorMessage = "";
         }
     }
 }

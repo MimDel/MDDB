@@ -2,7 +2,24 @@
 using System.Reflection.Metadata;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-//var dbManager = new DBManager();
+var dbManager = new DBManager();
+MyList<Cell> list = new MyList<Cell>();
+list.Add(new Cell("Name", MDDBType.String, "ebi se \"be\""));
+list.Add(new Cell("B", MDDBType.Int, "5"));
+//list.Add(new Cell("C", MDDBType.Int, "8"));
+//list.Add(new Cell("D", MDDBType.Int, "8"));
+//list.Add(new Cell("V", MDDBType.Int, "8"));
+//list.Add(new Cell("F", MDDBType.Int, "7"));
+
+
+//Console.WriteLine(dbManager.ExpresionToTrueOrFalse(list, "Name = \"ebi se \"be\"\" OR B < 5"));
+var l = new MyList<int>() { 1, 2, 3, 4, 5 };
+
+l.Reverse();
+foreach (var c in l)
+{ 
+    Console.Write(c + " ");
+} 
 
 //var col1 = new Column("a", MDDBType.Int);
 //var col2 = new Column("b", MDDBType.Date);

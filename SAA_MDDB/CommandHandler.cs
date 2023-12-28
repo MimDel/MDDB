@@ -99,7 +99,7 @@ namespace SAA_MDDB
                 return;
             }
             string tableInfo = StringHelper.Substring(param, startOfInfo+1, endOfInfo);
-            var tableCols = StringHelper.MySplit(tableInfo, ",");
+            var tableCols = StringHelper.MySplit(tableInfo, ',');
             for (int i = 0; i < tableCols.Length; i++)
             {
                 tableCols[i] = StringHelper.Trim(tableCols[i]);
