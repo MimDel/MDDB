@@ -96,6 +96,19 @@ class MyList<T> : IEnumerable<T>
         }
     }
 
+    public bool Contains(T value)
+    {
+        foreach (var v in this)
+        {
+            if (EqualityComparer<T>.Default.Equals(v, value))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public T[] ToArray()
     {
         var result  = new T[Count];

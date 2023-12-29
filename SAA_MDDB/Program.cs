@@ -2,24 +2,16 @@
 using System.Reflection.Metadata;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-var dbManager = new DBManager();
-MyList<Cell> list = new MyList<Cell>();
-list.Add(new Cell("Name", MDDBType.String, "ebi se \"be\""));
-list.Add(new Cell("B", MDDBType.Int, "5"));
+//var dbManager = new DBManager();
+//MyList<Cell> list = new MyList<Cell>();
+//list.Add(new Cell("Name", MDDBType.String, "ebi se \"be\""));
+//list.Add(new Cell("B", MDDBType.Int, "5"));
 //list.Add(new Cell("C", MDDBType.Int, "8"));
-//list.Add(new Cell("D", MDDBType.Int, "8"));
+//list.Add(new Cell("Date", MDDBType.Date, "01.02.2020"));
 //list.Add(new Cell("V", MDDBType.Int, "8"));
 //list.Add(new Cell("F", MDDBType.Int, "7"));
-
-
-//Console.WriteLine(dbManager.ExpresionToTrueOrFalse(list, "Name = \"ebi se \"be\"\" OR B < 5"));
-var l = new MyList<int>() { 1, 2, 3, 4, 5 };
-
-l.Reverse();
-foreach (var c in l)
-{ 
-    Console.Write(c + " ");
-} 
+//var col = new MyList<string>() {"name"};
+//dbManager.Select("person",col,null);
 
 //var col1 = new Column("a", MDDBType.Int);
 //var col2 = new Column("b", MDDBType.Date);
@@ -48,7 +40,6 @@ foreach (var c in l)
 
 //dbManager.Insert("Test2",data);
 
-CommandHandler commandHandler = new CommandHandler();
 //commandHandler.HandleCommand("DropTable Person");
 //commandHandler.HandleCommand("ListTables");
 
@@ -60,4 +51,18 @@ CommandHandler commandHandler = new CommandHandler();
 //commandHandler.HandleCommand("ListTables");
 
 //commandHandler.HandleCommand("Insert    INTO    Person   (Id, Name, BirthDate) VALUE (69, \"Helena H\", \"02.04.2020\") , (42, \"Lisa l\", \"01.09.1999\")");
+//commandHandler.HandleCommand("Select Name, Id From Person Where Name = \"Helena H\"");
+
+CommandHandler commandHandler = new CommandHandler();
+
+Console.WriteLine("Welcome to MDDB.");
+Console.Write("MDDB: ");
+string command = Console.ReadLine();
+while (command != "exit")
+{
+    commandHandler.HandleCommand(command);
+    Console.Write("MDDB: ");
+    command = Console.ReadLine();
+}
+
 

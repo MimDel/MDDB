@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -20,13 +21,14 @@ namespace SAA_MDDB
         private const string Int = "int";
         private const string String = "string";
         private const string Date = "date";
+        private const string Select = "select";
 
         private DBManager _dbManager = new DBManager();
 
         public void HandleCommand(string commandString)
         {
             commandString = StringHelper.RemoveExtraSpaces(commandString);
-            commandString = commandString.ToLower();
+            commandString = StringHelper.ToLower(commandString);
 
             //todo for the ListTable command if sould not only RemoveExtraSpaces but RamoveSpaces
 
@@ -53,6 +55,9 @@ namespace SAA_MDDB
                     break;
                 case Insert:
                     HandleInsert(param);
+                    break;
+                case Select:
+                    HandleSelect(param);
                     break;
                 default:
                     Console.WriteLine("There is no command that matches your input.");
@@ -330,6 +335,61 @@ namespace SAA_MDDB
                 isColSkipped = true;
             }
             return true;
+        }
+
+        private void HandleSelect(string param)
+        {
+            bool distinct = false;
+            int index = 0;
+            var data = StringHelper.SplitAttributesIncludeIgnore(param, '"', ' ');
+            string name = "";
+            MyList<string> colNames = new MyList<string>();
+            string? whereClause = null;
+
+            if (data[0] == "distinct") 
+            {
+                distinct = true;
+                index++;
+            }
+
+            if (!data.Contains("from"))
+            {
+                Console.WriteLine("Invalid select command.");
+                return;
+            }
+
+            while (data[index] != "from")
+            {
+                colNames.Add(StringHelper.Trim(data[index++], ','));
+            }
+
+            index++;
+
+            name = data[index++];
+
+            if (!data.Contains("where"))
+            {
+                _dbManager.Select(name, colNames, whereClause);
+                return;
+            }
+
+            index++;
+            while (index < data.Length && data[index] != "order")
+            {
+                whereClause += data[index++] + ' ';
+            }
+
+            if (index == data.Length)
+            {
+                _dbManager.Select(name, colNames, StringHelper.Trim(whereClause));
+                return;
+            }
+
+            if (data[index++] == "order" && data[index++] == "by")
+            {
+                //todo order by
+            }
+
         }
     }
 }

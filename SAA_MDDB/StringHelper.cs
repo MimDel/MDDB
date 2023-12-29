@@ -230,11 +230,17 @@ namespace SAA_MDDB
 
         public static string ToLower(string text)
         {
+            bool inQ = false;
             var copyText = text.ToCharArray();
             for (int i = 0; i < text.Length; i++)
             {
-                if (text[i] >= 'A' && text[i] <= 'Z')
+                if (text[i] == '"')
+                    inQ = !inQ;
+
+                if ((text[i] >= 'A' && text[i] <= 'Z') && !inQ)
                     copyText[i] = (char)(text[i] + 32);
+                else
+                    copyText[i] = text[i];
             }
             return new string(copyText);
         }

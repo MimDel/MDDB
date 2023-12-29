@@ -147,140 +147,54 @@ class DBManager
         row.Dispose();
     }
 
-    //private ExpressionResult Where(MyList<Cell> row, string expression)
-    //{
-       
-    //}
-
-    public string ExpresionToTrueOrFalse(MyList<Cell> row, string expression)
+    public void Select(string name, MyList<string> colNames, string? whereClause)
     {
-        if (expression[0] != '(')
+        if (!_tableNames.Contains(name))
         {
-            expression = "( "+ expression + " )";
+            Console.WriteLine("The name of the table is not valid.");
+            return;
         }
-        var exp = StringHelper.SplitAttributesIncludeIgnore(expression, '"', ' ');
-        string c = "";
-        string output = "";
+
+        var table = new DataFileStreamArray(name);
+        MyList<string> res = new MyList<string>();
+        for (int i = 0; i < table._rowCount; i++)
+        {
+            var cells = new MyList<Cell>();
+            var cols = StringHelper.MySplit(table[i],'\0');
+            for (int j = 0; j < cols.Length; j++)
+            {
+                var c = new Cell(table._metaData[j].Name, table._metaData[j].Type, StringHelper.Trim(cols[j]));
+                cells.Add(c);
+            }
+
+            if (whereClause == null)
+            {
+                res.Add(table[i]);
+            }
+            else if (Where(cells, whereClause))
+            {
+                res.Add(table[i]);
+            }
+        }
         
-        for (int i =0; i < exp.Length; i++)
+        for(int i =0; i<res.Count; i++)
         {
-            if (exp[i] == "AND" || exp[i] == "OR" || exp[i] == ")")
+            var s = "";
+            var cols = StringHelper.MySplit(res[i], '\0');
+            for (int j = 0; j < table._metaData.Count; j++)
             {
-                if (c == "")
-                {
-                    output += ")";
-                    break;
-                }
-
-                var comp = Compare(row, StringHelper.Trim(c));
-                if (!comp.Success)
-                { 
-                    Console.WriteLine(comp.ErrorMessage);
-                    return "";
-                }
-
-                char opr = ')';
-                if (exp[i] == "AND")
-                    opr = '&';
-                else if (exp[i] == "OR")
-                    opr = '|';
-
-                if (comp.Result)
-                    output += "T" + " " + opr + " ";
-                else
-                    output += "F" + " " + opr + " ";
-
-                c = "";
+                if (colNames.Contains(table._metaData[j].Name))
+                    s += cols[j] + ' ';
             }
-            else if (exp[i] == "(")
-            {
-                output += "(" + " ";
-            }
-            else if (exp[i] == ")")
-            { 
-                output += ")" + " ";
-            } 
-            else
-            {
-                c += exp[i] + " ";
-            }
+            Console.WriteLine(s);
         }
-
-        return output;
+        table.Dispose();
     }
 
-    private ExpressionResult Compare(MyList<Cell> row, string expression)
+    private bool Where(MyList<Cell> row, string expression)
     {
-        var exp = StringHelper.SplitAttributesIncludeIgnore(expression,'"' ,' ');
-        Cell? cell = null;
-        string left;
-        string opr;
-        string right;
-        bool notInExp = false;
-        bool endResult = false;
-        if (exp[0] == "NOT")
-        {
-            notInExp = true;
-            left = exp[1];
-            opr = exp[2];
-            right = exp[3];
-        }
-        else
-        {
-            left = exp[0];
-            opr = exp[1];
-            right = exp[2];
-        }
-
-        if (right[0] == '"')
-        {
-            right = StringHelper.Substring(right, 1, right.Length - 1);
-        }
-
-        for (int i = 0; i < row.Count; i++) 
-        {
-            if (left == row[i].ColName)
-            {
-                cell = row[i];
-                break;
-            }
-        }
-
-        if (cell == null)
-            return new ExpressionResult(false, false, "Not valid colnm name.");
-
-        int result = -2;
-        switch(cell.Type)
-        {
-            case MDDBType.Int:
-                 result = int.Parse(cell.Value).CompareTo(int.Parse(right));
-                break;
-            case MDDBType.String:
-                result = StringHelper.CompareStrings(cell.Value, right); 
-                break;
-            case MDDBType.Date:
-                result = DateTime.Compare(DateTime.Parse(cell.Value), DateTime.Parse(right));
-                break;
-        }
-
-        if (result == -2)
-            return new ExpressionResult(false, false, "Invalid type.");
-
-        switch (opr)
-        {
-            case "<>": endResult = (result != 0); break; 
-            case "=": endResult = (result == 0);break;
-            case ">": endResult = (result == 1); break;
-            case "<": endResult = (result == -1); break;
-            case "<=": endResult = (result == -1 || result == 0); break;
-            case ">=": endResult = (result == 1 || result == 0);break;
-            default: return new ExpressionResult(false, false, "Invalid operator.");
-        }
-
-        if (notInExp)
-            return new ExpressionResult(!endResult);
-
-        return new ExpressionResult(endResult);
-    }
+        string exp = BooleanParser.ExpresionToTrueOrFalse(row, expression);
+        return BooleanParser.EvaluateBooleanExpression(exp);
+    }   
 }
 

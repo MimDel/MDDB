@@ -29,10 +29,13 @@ namespace SAA_MDDB
             {
                 var output = "";
                 _fs.Seek(Offset + index * DataSize, SeekOrigin.Begin);
-                foreach (var c in _metaData) 
+
+                for (int i = 0; i < _metaData.Count - 1; i++)
                 {
-                    output += CharsToString(_br.ReadChars(c.GetSize())) + " ";
+                    output += CharsToString(_br.ReadChars(_metaData[i].GetSize())) + '\0';
                 }
+
+                output += CharsToString(_br.ReadChars(_metaData[_metaData.Count - 1].GetSize()));
                 return output;
             }
             set
