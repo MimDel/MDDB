@@ -22,6 +22,7 @@ namespace SAA_MDDB
         private const string String = "string";
         private const string Date = "date";
         private const string Select = "select";
+        private const string Delete = "delete";
 
         private DBManager _dbManager = new DBManager();
 
@@ -58,6 +59,9 @@ namespace SAA_MDDB
                     break;
                 case Select:
                     HandleSelect(param);
+                    break;
+                case Delete:
+                    HandleDelete(param);
                     break;
                 default:
                     Console.WriteLine("There is no command that matches your input.");
@@ -389,7 +393,38 @@ namespace SAA_MDDB
             {
                 //todo order by
             }
+        }
 
+        private void HandleDelete(string param)
+        {
+            int index = 0;
+            string name = "";
+            string? whereClause = null;
+
+            var data = StringHelper.SplitAttributesIncludeIgnore(param, '"', ' ');
+            if (data[0] != "from")
+            {
+                Console.WriteLine("Invalid delete command - you are missing the key word \"From\".");
+                return;
+            }
+
+            index++;
+            name = data[index];
+            index++;
+
+            if (data[index] != "where")
+            {
+                Console.WriteLine("Invalid delete command - you are missing the key word \"Where\".");
+                return;
+            }
+
+            index++;
+            while (index < data.Length)
+            {
+                whereClause += data[index++] + ' ';
+            }
+
+            _dbManager.Delete(name, whereClause);
         }
     }
 }

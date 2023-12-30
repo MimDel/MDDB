@@ -147,16 +147,18 @@ class DBManager
         row.Dispose();
     }
 
-    public void Select(string name, MyList<string> colNames, string? whereClause)
+    public MyList<int> Select(string name, MyList<string>? colNames, string? whereClause)
     {
         if (!_tableNames.Contains(name))
         {
             Console.WriteLine("The name of the table is not valid.");
-            return;
+            return new MyList<int>();
         }
 
         var table = new DataFileStreamArray(name);
         MyList<string> res = new MyList<string>();
+        MyList<int> indexes = new MyList<int>();
+
         for (int i = 0; i < table._rowCount; i++)
         {
             var cells = new MyList<Cell>();
@@ -170,13 +172,21 @@ class DBManager
             if (whereClause == null)
             {
                 res.Add(table[i]);
+                indexes.Add(i);
             }
             else if (Where(cells, whereClause))
             {
                 res.Add(table[i]);
+                indexes.Add(i);
             }
         }
         
+        if(colNames == null)
+        {
+            table.Dispose();
+            return indexes;
+        }
+
         for(int i =0; i<res.Count; i++)
         {
             var s = "";
@@ -185,10 +195,58 @@ class DBManager
             {
                 if (colNames.Contains(table._metaData[j].Name))
                     s += cols[j] + ' ';
+                else if (colNames == null)
+                    s += cols[j] + ' ';
             }
             Console.WriteLine(s);
         }
+
+        Console.WriteLine($"You have selected {res.Count} rows.");
+
         table.Dispose();
+        return indexes;
+    }
+
+    public void Delete(string name, string? whereClause)
+    {
+        var indexes = Select(name, null, whereClause);
+        File.Copy($"Meta_{name}", $"Meta_copy_{name}");
+
+        var f = File.Create($"copy_{name}");
+        var br = new BinaryWriter(f, Encoding.ASCII, true);
+        br.Write(0);
+        br.Close();
+        f.Close();
+
+        var table = new DataFileStreamArray(name);//Go - 0
+        var copyTable = new DataFileStreamArray($"copy_{name}");
+        int j = 0;
+        int i = 0;
+        for (; i < table._rowCount && j < indexes.Count; i++)
+        {
+            if (indexes[j] != i)
+            {
+                copyTable[copyTable._rowCount] = table[i];
+            }
+            else
+                j++;
+        }
+
+        for (; i < table._rowCount; i++)
+        {
+            copyTable[copyTable._rowCount] = table[i];
+        }
+
+        table.Dispose();
+        copyTable.Dispose();
+
+        File.Delete($"Meta_{name}");
+        File.Move($"Meta_copy_{name}", $"Meta_{name}");
+
+        File.Delete(name);
+        File.Move($"copy_{name}", name);
+
+        Console.WriteLine($"You deleted {indexes.Count} rows from table - {name}");
     }
 
     private bool Where(MyList<Cell> row, string expression)
