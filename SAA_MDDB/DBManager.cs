@@ -7,6 +7,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SAA_MDDB;
 
@@ -156,13 +157,41 @@ class DBManager
         }
 
         var table = new DataFileStreamArray(name);
-        MyList<string> res = new MyList<string>();
+        MyList<MyList<Cell>> res = new MyList<MyList<Cell>>();
         MyList<int> indexes = new MyList<int>();
 
+        LoadCells(name, whereClause, ref res, ref indexes,table);
+
+        if (colNames == null)
+        {
+            return indexes;
+        }
+
+        var stringRes = FromCellsToRow(ref res);
+
+        TrimCols(colNames, ref stringRes,table);
+
+        if (distinct)
+        {
+            Distinct(stringRes);
+        }
+
+        for (int i = 0; i < stringRes.Count; i++)
+            Console.WriteLine(stringRes[i]);
+
+        Console.WriteLine($"You have selected {stringRes.Count} rows.");
+
+        table.Dispose();
+        return indexes;
+    }
+
+    private void LoadCells(string name, string? whereClause, ref MyList<MyList<Cell>> res, ref MyList<int> indexes, DataFileStreamArray table)
+    {
         for (int i = 0; i < table._rowCount; i++)
         {
             var cells = new MyList<Cell>();
-            var cols = StringHelper.MySplit(table[i],'\0');
+            var cols = StringHelper.MySplit(table[i], '\0');
+
             for (int j = 0; j < cols.Length; j++)
             {
                 var c = new Cell(table._metaData[j].Name, table._metaData[j].Type, StringHelper.Trim(cols[j]));
@@ -171,24 +200,20 @@ class DBManager
 
             if (whereClause == null)
             {
-                res.Add(table[i]);
+                res.Add(cells);
                 indexes.Add(i);
             }
             else if (Where(cells, whereClause))
             {
-                res.Add(table[i]);
+                res.Add(cells);
                 indexes.Add(i);
             }
         }
-        
-        if(colNames == null)
-        {
-            table.Dispose();
-            return indexes;
-        }
+    }
 
-
-        for(int i =0; i<res.Count; i++)
+    private void TrimCols(MyList<string>? colNames, ref MyList<string> res, DataFileStreamArray table)
+    {
+        for (int i = 0; i < res.Count; i++)
         {
             var s = "";
             var cols = StringHelper.MySplit(res[i], '\0');
@@ -201,28 +226,36 @@ class DBManager
             }
             res[i] = s;
         }
+    }
 
-        if (distinct)
+    private void Distinct(MyList<string> res)
+    {
+        for (int i = 0; i < res.Count; i++)
         {
-            for (int i = 0; i < res.Count; i++)
+            for (int j = i + 1; j < res.Count; j++)
             {
-                for (int j = i + 1; j < res.Count; j++)
+                if (res[i] == res[j])
                 {
-                    if (res[i] == res[j])
-                    {
-                        res.RemoveAt(j);
-                    }
+                    res.RemoveAt(j);
                 }
             }
         }
+    }
 
+    private MyList<string> FromCellsToRow(ref MyList<MyList<Cell>> res)
+    {
+        var rows = new MyList<string>();
         for (int i = 0; i < res.Count; i++)
-            Console.WriteLine(res[i]);
+        {
+            string s = "";
+            for (int j = 0; j < res[i].Count; j++)
+            {
+                 s += res[i][j].Value + "\0";
+            }
+            rows.Add(s);
+        }
 
-        Console.WriteLine($"You have selected {res.Count} rows.");
-
-        table.Dispose();
-        return indexes;
+        return rows;
     }
 
     public void Delete(string name, string? whereClause)
