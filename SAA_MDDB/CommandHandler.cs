@@ -373,7 +373,7 @@ namespace SAA_MDDB
 
             if (!data.Contains("where"))
             {
-                _dbManager.Select(name, colNames, whereClause);
+                _dbManager.Select(name, colNames, whereClause, distinct);
                 return;
             }
 
@@ -385,7 +385,7 @@ namespace SAA_MDDB
 
             if (index == data.Length)
             {
-                _dbManager.Select(name, colNames, StringHelper.Trim(whereClause));
+                _dbManager.Select(name, colNames, StringHelper.Trim(whereClause),distinct);
                 return;
             }
 

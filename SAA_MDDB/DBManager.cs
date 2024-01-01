@@ -147,7 +147,7 @@ class DBManager
         row.Dispose();
     }
 
-    public MyList<int> Select(string name, MyList<string>? colNames, string? whereClause)
+    public MyList<int> Select(string name, MyList<string>? colNames, string? whereClause, bool distinct)
     {
         if (!_tableNames.Contains(name))
         {
@@ -187,6 +187,7 @@ class DBManager
             return indexes;
         }
 
+
         for(int i =0; i<res.Count; i++)
         {
             var s = "";
@@ -198,8 +199,25 @@ class DBManager
                 else if (colNames == null)
                     s += cols[j] + ' ';
             }
-            Console.WriteLine(s);
+            res[i] = s;
         }
+
+        if (distinct)
+        {
+            for (int i = 0; i < res.Count; i++)
+            {
+                for (int j = i + 1; j < res.Count; j++)
+                {
+                    if (res[i] == res[j])
+                    {
+                        res.RemoveAt(j);
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < res.Count; i++)
+            Console.WriteLine(res[i]);
 
         Console.WriteLine($"You have selected {res.Count} rows.");
 
@@ -209,7 +227,7 @@ class DBManager
 
     public void Delete(string name, string? whereClause)
     {
-        var indexes = Select(name, null, whereClause);
+        var indexes = Select(name, null, whereClause, false);
         File.Copy($"Meta_{name}", $"Meta_copy_{name}");
 
         var f = File.Create($"copy_{name}");
