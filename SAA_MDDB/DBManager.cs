@@ -5,6 +5,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -148,7 +149,7 @@ class DBManager
         row.Dispose();
     }
 
-    public MyList<int> Select(string name, MyList<string>? colNames, string? whereClause, bool distinct)
+    public MyList<int> Select(string name, MyList<string>? colNames, string? whereClause, bool distinct, MyList<string> orderClause)
     {
         if (!_tableNames.Contains(name))
         {
@@ -160,16 +161,21 @@ class DBManager
         MyList<MyList<Cell>> res = new MyList<MyList<Cell>>();
         MyList<int> indexes = new MyList<int>();
 
-        LoadCells(name, whereClause, ref res, ref indexes,table);
+        LoadCells(name, whereClause, ref res, ref indexes, table);
 
         if (colNames == null)
         {
             return indexes;
         }
 
+        if (orderClause.Count != 0)
+        {
+            OrderBy(ref res, orderClause);
+        }
+
         var stringRes = FromCellsToRow(ref res);
 
-        TrimCols(colNames, ref stringRes,table);
+        TrimCols(colNames, ref stringRes, table);
 
         if (distinct)
         {
@@ -242,6 +248,105 @@ class DBManager
         }
     }
 
+    private void OrderBy(ref MyList<MyList<Cell>> res, MyList<string>? orderClause)
+    {
+        for (int i = 0; i < res.Count - 1; i++)
+        {
+            for (int j = 0; j < res.Count - i - 1; j++)
+            {
+                if (CompareRows(res[j], res[j + 1], orderClause) > 0)
+                {
+                    MyList<Cell> tmp = res[j];
+                    res[j] = res[j + 1];
+                    res[j + 1] = tmp;
+                }
+            }
+        }
+    }
+
+    private void QuickSort(ref MyList<MyList<Cell>> res, MyList<string>? orderClause, int l, int r)
+    {
+        if (l < r)
+        {
+            int pivot = Partition(ref res, orderClause, l, r);
+
+            if (pivot > 1)
+                QuickSort(ref res,orderClause, 1, pivot - 1);
+
+            if(pivot+1<r)
+                QuickSort(ref res,orderClause, pivot+1, r);
+        }
+    }
+
+    private int Partition(ref MyList<MyList<Cell>> res, MyList<string>? orderClause, int l, int r)
+    {
+        MyList<Cell> temp;
+        int pI = l++;
+
+        while (true)
+        {
+            while (l <= r && CompareRows(res[l], res[pI], orderClause) <= 0)
+                l++; 
+            while(l<=r && CompareRows(res[r], res[pI], orderClause)>=0)
+                r--;
+
+            if (l >= r)
+                break;
+            else 
+            {
+                temp = res[l];
+                res[l] = res[r];
+                res[r] = temp;
+            }
+        }
+        temp = res[r];
+        res[r] = res[pI];
+        res[pI] = temp;
+
+        return r;
+    }
+    
+    private int CompareRows(MyList<Cell> row1, MyList<Cell> row2, MyList<string>? orderClause)
+    {
+        int lastColInOrderClause = 0;
+        int compareRes = -2;
+        do
+        {
+            int col = 0;
+            for (int i = 0; i < row1.Count; i++)
+            {
+                if (row1[i].ColName == orderClause[lastColInOrderClause])
+                {
+                    col = i;
+                    break;
+                }
+            }
+            compareRes = CompareCell(row1[col], row2[col]);
+            lastColInOrderClause++;
+        }
+        while (compareRes == 0 && lastColInOrderClause < orderClause.Count);
+
+        return compareRes;
+    }
+
+    private int CompareCell(Cell left, Cell right)
+    {
+        int result = -2;
+        switch (left.Type)
+        {
+            case MDDBType.Int:
+                result = int.Parse(left.Value).CompareTo(int.Parse(right.Value));
+                break;
+            case MDDBType.String:
+                result = StringHelper.CompareStrings(left.Value, right.Value);
+                break;
+            case MDDBType.Date:
+                result = DateTime.Compare(DateTime.Parse(left.Value), DateTime.Parse(right.Value));
+                break;
+        }
+
+        return result;
+    }
     private MyList<string> FromCellsToRow(ref MyList<MyList<Cell>> res)
     {
         var rows = new MyList<string>();
@@ -260,7 +365,7 @@ class DBManager
 
     public void Delete(string name, string? whereClause)
     {
-        var indexes = Select(name, null, whereClause, false);
+        var indexes = Select(name, null, whereClause, false, null);
         File.Copy($"Meta_{name}", $"Meta_copy_{name}");
 
         var f = File.Create($"copy_{name}");

@@ -349,6 +349,7 @@ namespace SAA_MDDB
             string name = "";
             MyList<string> colNames = new MyList<string>();
             string? whereClause = null;
+            MyList<string>? orderClause = new MyList<string>();
 
             if (data[0] == "distinct") 
             {
@@ -371,28 +372,38 @@ namespace SAA_MDDB
 
             name = data[index++];
 
-            if (!data.Contains("where"))
+            if (index == data.Length)
             {
-                _dbManager.Select(name, colNames, whereClause, distinct);
+                _dbManager.Select(name, colNames, whereClause, distinct, orderClause);
                 return;
             }
 
-            index++;
-            while (index < data.Length && data[index] != "order")
+            if (data[index] == "where")
             {
-                whereClause += data[index++] + ' ';
+                index++;
+                while (index < data.Length && data[index] != "order")
+                {
+                    whereClause += data[index++] + ' ';
+                }
             }
 
             if (index == data.Length)
             {
-                _dbManager.Select(name, colNames, StringHelper.Trim(whereClause),distinct);
+                _dbManager.Select(name, colNames, whereClause, distinct, orderClause);
                 return;
             }
 
-            if (data[index++] == "order" && data[index++] == "by")
+            if (data[index++] == "order" && data[index] == "by")
             {
-                //todo order by
+                index++;
+                while (index < data.Length)
+                {
+                    orderClause.Add(data[index++]);
+                }
             }
+
+            _dbManager.Select(name, colNames, whereClause, distinct, orderClause);
+
         }
 
         private void HandleDelete(string param)
